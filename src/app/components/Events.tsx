@@ -1,16 +1,21 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Calendar, MapPin, Users, Clock, Search, BookMarked, Laptop, Baby, GraduationCap, BriefcaseIcon, Star } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-//import { EVENTS_DATA, Event, BRANCHES } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 
 export default function Events() {
   const { user } = useAuth();
+
+  // NEW: events from Railway API
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [branchFilter, setBranchFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -20,22 +25,36 @@ export default function Events() {
   const categories = ['all', 'Workshop', 'Reading', 'Kids', 'Teen', 'Adult', 'Tech'];
   const ageGroups = ['all', 'All Ages', 'Children (0-12)', 'Teens (13-17)', 'Adults (18+)', 'Seniors (65+)'];
 
-  // Get category icon and color
+  // ⭐ NEW: Fetch events from Railway backend
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/events`);
+        if (!res.ok) throw new Error("Failed to fetch events");
+
+        const data = await res.json();
+        setEvents(data);
+      } catch (err) {
+        setError("Unable to load events");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadEvents();
+  }, []);
+
+  // Category icon
   const getCategoryIcon = (category: Event['category']) => {
     const iconClass = 'w-5 h-5';
     switch (category) {
-      case 'Workshop':
-        return <BriefcaseIcon className={iconClass} />;
-      case 'Reading':
-        return <BookMarked className={iconClass} />;
-      case 'Kids':
-        return <Baby className={iconClass} />;
-      case 'Teen':
-        return <GraduationCap className={iconClass} />;
-      case 'Tech':
-        return <Laptop className={iconClass} />;
-      default:
-        return <Calendar className={iconClass} />;
+      case 'Workshop': return <BriefcaseIcon className={iconClass} />;
+      case 'Reading': return <BookMarked className={iconClass} />;
+      case 'Kids': return <Baby className={iconClass} />;
+      case 'Teen': return <GraduationCap className={iconClass} />;
+      case 'Tech': return <Laptop className={iconClass} />;
+      default: return <Calendar className={iconClass} />;
     }
   };
 
@@ -51,67 +70,71 @@ export default function Events() {
     return colors[category] || 'bg-gray-100 text-gray-700 border-gray-200';
   };
 
-  // Filter events
+  // ⭐ Replace EVENTS_DATA with real events
   const filteredEvents = useMemo(() => {
     const now = new Date();
-    return EVENTS_DATA.filter(event => {
-      const eventDate = new Date(event.date);
-      
-      // Search query
-      const matchesSearch = searchQuery === '' || 
-        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.location.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      // Branch filter
-      const matchesBranch = branchFilter === 'all' || event.location === branchFilter;
-      
-      // Category filter
-      const matchesCategory = categoryFilter === 'all' || event.category === categoryFilter;
-      
-      // Age group filter
-      const matchesAgeGroup = ageGroupFilter === 'all' || event.ageGroup === ageGroupFilter;
-      
-      // Date filter
-      let matchesDate = true;
-      if (dateFilter === 'thisWeek') {
-        const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-        matchesDate = eventDate >= now && eventDate <= weekFromNow;
-      } else if (dateFilter === 'thisMonth') {
-        matchesDate = eventDate.getMonth() === now.getMonth() && 
-                     eventDate.getFullYear() === now.getFullYear();
-      } else if (dateFilter === 'nextMonth') {
-        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-        matchesDate = eventDate.getMonth() === nextMonth.getMonth() && 
-                     eventDate.getFullYear() === nextMonth.getFullYear();
-      }
 
-      return matchesSearch && matchesBranch && matchesCategory && matchesAgeGroup && matchesDate;
-    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [searchQuery, branchFilter, categoryFilter, ageGroupFilter, dateFilter]);
+    return events
+      .filter(event => {
+        const eventDate = new Date(event.date);
 
-  // Group events by date
+        const matchesSearch =
+          searchQuery === '' ||
+          event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          event.location.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesBranch = branchFilter === 'all' || event.location === branchFilter;
+        const matchesCategory = categoryFilter === 'all' || event.category === categoryFilter;
+        const matchesAgeGroup = ageGroupFilter === 'all' || event.ageGroup === ageGroupFilter;
+
+        let matchesDate = true;
+        if (dateFilter === 'thisWeek') {
+          const weekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+          matchesDate = eventDate >= now && eventDate <= weekFromNow;
+        } else if (dateFilter === 'thisMonth') {
+          matchesDate =
+            eventDate.getMonth() === now.getMonth() &&
+            eventDate.getFullYear() === now.getFullYear();
+        } else if (dateFilter === 'nextMonth') {
+          const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          matchesDate =
+            eventDate.getMonth() === nextMonth.getMonth() &&
+            eventDate.getFullYear() === nextMonth.getFullYear();
+        }
+
+        return (
+          matchesSearch &&
+          matchesBranch &&
+          matchesCategory &&
+          matchesAgeGroup &&
+          matchesDate
+        );
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [events, searchQuery, branchFilter, categoryFilter, ageGroupFilter, dateFilter]);
+
+  // ⭐ Group events by date
   const groupedEvents = useMemo(() => {
     const groups: { [key: string]: Event[] } = {};
     filteredEvents.forEach(event => {
-      const date = new Date(event.date).toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      const date = new Date(event.date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       });
-      if (!groups[date]) {
-        groups[date] = [];
-      }
+      if (!groups[date]) groups[date] = [];
       groups[date].push(event);
     });
     return groups;
   }, [filteredEvents]);
 
-  // Get featured events
-  const featuredEvents = useMemo(() => 
-    EVENTS_DATA.filter(event => event.isFeatured).slice(0, 3),
-  []);
+  // ⭐ Featured events from API
+  const featuredEvents = useMemo(
+    () => events.filter(event => event.isFeatured).slice(0, 3),
+    [events]
+  );
 
   const handleRegister = (event: Event) => {
     if (!user) {
@@ -127,11 +150,22 @@ export default function Events() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric' 
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
     });
   };
+
+  // ⭐ Loading + error UI
+  if (loading) return <p className="p-6">Loading events…</p>;
+  if (error) return <p className="p-6 text-red-600">{error}</p>;
+
+  return (
+    <div>
+      {/* Your existing JSX stays the same */}
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen bg-gray-50">
