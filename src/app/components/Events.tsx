@@ -8,6 +8,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 
+type Event = {
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  time?: string;
+  location: string;
+  category: 'Workshop' | 'Reading' | 'Kids' | 'Teen' | 'Adult' | 'Tech';
+  ageGroup: string;
+  capacity: number;
+  registered: number;
+  isFeatured?: boolean;
+  isFree?: boolean;
+  requiresRegistration?: boolean;
+};
+
 export default function Events() {
   const { user } = useAuth();
 
@@ -156,16 +172,10 @@ export default function Events() {
     });
   };
 
-  // ⭐ Loading + error UI
+  // Loading + error UI
   if (loading) return <p className="p-6">Loading events…</p>;
   if (error) return <p className="p-6 text-red-600">{error}</p>;
 
-  return (
-    <div>
-      {/* Your existing JSX stays the same */}
-    </div>
-  );
-}
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -210,7 +220,7 @@ export default function Events() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Branches</SelectItem>
-                        {BRANCHES.map(branch => (
+                        {Array.from(new Set(events.map(e => e.location))).map(branch => (
                           <SelectItem key={branch} value={branch}>{branch}</SelectItem>
                         ))}
                       </SelectContent>
@@ -271,7 +281,7 @@ export default function Events() {
             <div>
               <p className="text-sm text-gray-600">
                 Showing <span className="font-semibold">{filteredEvents.length}</span> of{' '}
-                <span className="font-semibold">{EVENTS_DATA.length}</span> events
+                <span className="font-semibold">{events.length}</span> events
               </p>
             </div>
 
