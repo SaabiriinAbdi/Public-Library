@@ -86,7 +86,7 @@ export default function Events() {
     return colors[category] || 'bg-gray-100 text-gray-700 border-gray-200';
   };
 
-  // ⭐ Replace EVENTS_DATA with real events
+  // real events
   const filteredEvents = useMemo(() => {
     const now = new Date();
 
@@ -130,7 +130,7 @@ export default function Events() {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [events, searchQuery, branchFilter, categoryFilter, ageGroupFilter, dateFilter]);
 
-  // ⭐ Group events by date
+  //  Group events by date
   const groupedEvents = useMemo(() => {
     const groups: { [key: string]: Event[] } = {};
     filteredEvents.forEach(event => {
@@ -146,7 +146,7 @@ export default function Events() {
     return groups;
   }, [filteredEvents]);
 
-  // ⭐ Featured events from API
+  // Featured events from API
   const featuredEvents = useMemo(
     () => events.filter(event => event.isFeatured).slice(0, 3),
     [events]
