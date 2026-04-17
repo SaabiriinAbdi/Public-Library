@@ -3,10 +3,9 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig(({ command }) => {
-  return {
-    base: command === 'build' ? '/Public-Library/' : '/',
-    plugins: [
+export default defineConfig({
+  base: '/Public-Library/',
+   plugins: [
       react(),
       tailwindcss(),
     ],
@@ -16,5 +15,4 @@ export default defineConfig(({ command }) => {
       },
     },
     assetsInclude: ['**/*.svg', '**/*.csv'],
-  }
-})
+  })
