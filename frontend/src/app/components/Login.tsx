@@ -56,7 +56,7 @@ export default function Login() {
       const success = await loginStaff(staffEmail, staffPassword);
       if (success) {
         toast.success('Staff login successful!');
-        navigate('/my-account');
+        navigate('/staff/dashboard');
       } else {
         toast.error('Invalid email or password. Try password: staff123');
       }
