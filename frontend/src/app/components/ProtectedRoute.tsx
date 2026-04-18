@@ -1,13 +1,19 @@
-import { Navigate } from 'react-router';
+import { Navigate, useLocation } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
+export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const { patronAuthenticated, staffAuthenticated } = useAuth();
 
-export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const isAuthenticated = localStorage.getItem('staffAuthenticated') === 'true';
+  const isStaffRoute = location.pathname.startsWith("/staff");
 
-  if (!isAuthenticated) {
+  // Staff section protection
+  if (isStaffRoute && !staffAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Patron section protection (if you ever protect patron pages)
+  if (!isStaffRoute && !patronAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
