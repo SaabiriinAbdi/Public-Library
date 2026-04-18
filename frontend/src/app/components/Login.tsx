@@ -55,6 +55,9 @@ export default function Login() {
     try {
       const success = await loginStaff(staffEmail, staffPassword);
       if (success) {
+        // required for protected route
+        localStorage.setItem('staffAuthenticated', 'true');
+
         toast.success('Staff login successful!');
         navigate('/staff/dashboard');
       } else {
