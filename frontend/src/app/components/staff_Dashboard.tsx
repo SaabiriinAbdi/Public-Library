@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 import {
-  Calendar,
   BookOpen,
+  Users,
   Clock,
-  TrendingUp,
+  ListChecks,
   ScanLine,
   ScanBarcode,
   PlusCircle,
-  ListChecks,
 } from "lucide-react";
 
 import { StaffAPI } from "../../api/staff";
@@ -50,32 +49,32 @@ export default function Dashboard() {
 
   const metricCards = [
     {
-      label: "Items Due Today",
-      value: metrics.itemsDueToday,
-      icon: Clock,
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-    },
-    {
-      label: "Items on Hold",
-      value: metrics.itemsOnHold,
+      label: "Total Books",
+      value: metrics.totalBooks,
       icon: BookOpen,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
     },
     {
-      label: "Inter-Branch Transfers",
-      value: metrics.interBranchTransfers,
-      icon: TrendingUp,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-    },
-    {
-      label: "Upcoming Events",
-      value: metrics.upcomingEvents,
-      icon: Calendar,
+      label: "Total Patrons",
+      value: metrics.totalPatrons,
+      icon: Users,
       color: "text-green-600",
       bgColor: "bg-green-50",
+    },
+    {
+      label: "Active Loans",
+      value: metrics.activeLoans,
+      icon: Clock,
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
+    },
+    {
+      label: "Total Holds",
+      value: metrics.totalHolds,
+      icon: ListChecks,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
     },
   ];
 
@@ -97,12 +96,6 @@ export default function Dashboard() {
       icon: PlusCircle,
       to: "/staff/catalog",
       color: "bg-purple-600 hover:bg-purple-700",
-    },
-    {
-      label: "View Holds Queue",
-      icon: ListChecks,
-      to: "/staff/patrons",
-      color: "bg-orange-600 hover:bg-orange-700",
     },
   ];
 
