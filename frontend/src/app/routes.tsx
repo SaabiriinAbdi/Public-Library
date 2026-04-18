@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router";
-import Layout from './layout';
+import StaffLayout from "./components/Layout";   
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Patron Components
@@ -21,13 +21,11 @@ import PatronLookup from "./components/staff_PatronLookup";
 import EventManagement from "./components/staff_EventManagement";
 
 export const router = createBrowserRouter([
-  // Shared Login
   {
     path: "/login",
     Component: Login,
   },
 
-  // Patron Routes
   {
     path: "/",
     Component: Root,
@@ -40,12 +38,11 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Staff Routes (Protected)
   {
     path: "/staff",
     element: (
       <ProtectedRoute>
-        <Layout />
+        <StaffLayout />
       </ProtectedRoute>
     ),
     children: [
@@ -60,7 +57,6 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // Fallback
   {
     path: "*",
     element: <Navigate to="/" replace />,
