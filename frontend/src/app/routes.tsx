@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router";
-import StaffLayout from "./components/Layout";   
+import StaffLayout from "./layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Patron Components
