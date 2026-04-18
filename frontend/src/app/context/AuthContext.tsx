@@ -127,23 +127,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loginStaff = async (email: string, password: string): Promise<boolean> => {
-    // Mock staff authentication - accept any email with password "staff123"
     if (password === 'staff123') {
       const userData = { ...MOCK_STAFF_USER, email };
       setUser(userData);
       setLoans([]);
       setHolds([]);
+
       localStorage.setItem('library_user', JSON.stringify(userData));
+      localStorage.setItem('staffAuthenticated', 'true');   // ⭐ REQUIRED
+
       return true;
     }
     return false;
   };
+
 
   const logout = () => {
     setUser(null);
     setLoans([]);
     setHolds([]);
     localStorage.removeItem('library_user');
+    localStorage.removeItem('staffAuthenticated');
   };
 
   const register = async (name: string, email: string, cardNumber: string, pin: string): Promise<boolean> => {
