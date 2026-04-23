@@ -1,3 +1,4 @@
+import { LoansAPI } from "../../api/loans";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router";
 import { Search, Filter, BookOpen, MapPin, X } from "lucide-react";
@@ -135,10 +136,16 @@ export default function Catalog() {
   const getAvailableCopies = (book: any) =>
     book.branches.reduce((sum: number, b: any) => sum + b.available, 0);
 
-  const handleBorrow = (book: any) => {
+  const handleBorrow = async (book: any) => {
     if (!user) return toast.error("Please log in to borrow books");
     if (!book.available) return toast.error("This book is unavailable");
-    toast.success(`"${book.title}" added to your loans`);
+
+    try {
+      await LoansAPI.create(book.id, user.id);
+      toast.success(`"${book.title}" added to your loans! Due in 14 days.`);
+    } catch (err) {
+      toast.error("Failed to borrow book. Please try again.");
+    }
   };
 
   const handlePlaceHold = (book: any) => {
