@@ -441,6 +441,11 @@ export default function Catalog() {
                           src={book.coverImage}
                           alt={book.title}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = '';
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.parentElement!.style.background = '#e5e7eb';
+                          }}
                         />
                       </div>
 

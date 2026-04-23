@@ -16,8 +16,8 @@ export default function Login() {
   const [loginType, setLoginType] = useState<'patron' | 'staff'>('patron');
 
   // Patron login form state
-  const [loginCardNumber, setLoginCardNumber] = useState('');
-  const [loginPin, setLoginPin] = useState('');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
 
   // Staff login form state
   const [staffEmail, setStaffEmail] = useState('');
@@ -34,12 +34,12 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const success = await login(loginCardNumber, loginPin);
+      const success = await login(loginEmail, loginPassword);
       if (success) {
         toast.success('Welcome back!');
         navigate('/my-account');
       } else {
-        toast.error('Invalid card number or PIN. Try PIN: 1234');
+        toast.error('Invalid email or PIN. Please try again.');
       }
     } catch (error) {
       toast.error('An error occurred. Please try again.');
@@ -61,7 +61,7 @@ export default function Login() {
         toast.success('Staff login successful!');
         navigate('/staff/dashboard');
       } else {
-        toast.error('Invalid email or password. Try password: staff123');
+        toast.error('Invalid email or password. Please try again.');
       }
     } catch (error) {
       toast.error('An error occurred. Please try again.');
@@ -125,26 +125,26 @@ export default function Login() {
               // Patron Login Form
               <form onSubmit={handlePatronLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="card-number">Library Card Number</Label>
+                  <Label htmlFor="email">Email Address</Label>
                   <Input
-                    id="card-number"
-                    placeholder="Enter your card number"
-                    value={loginCardNumber}
-                    onChange={(e) => setLoginCardNumber(e.target.value)}
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="pin">PIN</Label>
+                  <Label htmlFor="password">Password</Label>
                   <Input
-                    id="pin"
+                    id="password"
                     type="password"
-                    placeholder="Enter your PIN"
-                    value={loginPin}
-                    onChange={(e) => setLoginPin(e.target.value)}
+                    placeholder="Enter your password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
                     required
                   />
-                  <p className="text-xs text-gray-500">Demo: Use PIN "1234" with any card number</p>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Signing In...' : 'Sign In'}
@@ -174,7 +174,6 @@ export default function Login() {
                     onChange={(e) => setStaffPassword(e.target.value)}
                     required
                   />
-                  <p className="text-xs text-gray-500">Demo: Use password "staff123" with any email</p>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Signing In...' : 'Sign In as Staff'}

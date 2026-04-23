@@ -42,7 +42,7 @@ router.get("/", async (req, res) => {
         ...book,
         format: "Book",
         description: "",
-        coverImage: "",
+        coverImage: book.isbn ? `https://covers.openlibrary.org/b/isbn/${book.isbn}-M.jpg` : "",
         subjects: [],
         available: totalAvailable > 0,
         branches,
