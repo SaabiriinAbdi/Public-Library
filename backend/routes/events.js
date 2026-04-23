@@ -8,22 +8,18 @@ router.get("/", async (req, res) => {
   try {
     const [rows] = await db.query(`
       SELECT 
-        id,
-        title,
-        description,
-        date,
-        time,
-        location,
-        category,
-        ageGroup,
-        capacity,
-        registered,
-        isFeatured
-      FROM events
-      ORDER BY date ASC;
+        e.event_id AS id,
+        e.name AS title,
+        e.description,
+        e.event_date AS date,
+        e.capacity,
+        b.name AS location
+      FROM events e
+      LEFT JOIN branches b ON e.branch_id = b.branch_id
+      ORDER BY e.event_date ASC
     `);
 
-    res.json(rows);
+    res.json({ data: rows });
   } catch (err) {
     console.error("Error fetching events:", err);
     res.status(500).json({ error: "Failed to load events" });
@@ -34,7 +30,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   try {
     const [rows] = await db.query(
-      `SELECT * FROM events WHERE id = ?`,
+      `SELECT * FROM events WHERE event_id = ?`,
       [req.params.id]
     );
 
