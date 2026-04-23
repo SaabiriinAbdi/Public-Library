@@ -2,6 +2,16 @@
 
 A full-stack web application for managing a public library's catalog, events, patrons, and staff.
 
+## Demo Credentials
+
+### Patron Login
+- **Email:** dkalewe0@apple.com
+- **Password:** password
+
+### Staff Login
+- **Email:** alongstreeth0@toplist.cz
+- **Password:** password
+
 ## Tech Stack
 
 - **Frontend:** React, TypeScript, Vite, Tailwind CSS
