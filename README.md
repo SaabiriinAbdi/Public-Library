@@ -4,6 +4,9 @@ A full-stack web application for managing a public library's catalog, events, pa
 
 ## Demo Credentials
 
+## Live Demo
+https://public-library-two.vercel.app
+
 ### Patron Login
 - **Email:** dkalewe0@apple.com
 - **Password:** password
